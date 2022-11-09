@@ -1,1 +1,1 @@
-# PreskritivAnallytik
+# Preskritiv Analytik

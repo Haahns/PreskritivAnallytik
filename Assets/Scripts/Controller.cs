@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour {
 
-void Update ()
-{
-if (Input.GetKey (KeyCode.UpArrow) || Input.GetKey (KeyCode.W)) {
-this.transform.Translate(new Vector2 (0f, 4f) * Time.deltaTime,Space.World);
-} else if (Input.GetKey (KeyCode.DownArrow) || Input.GetKey (KeyCode.S) ) {
-this.transform.Translate(new Vector2 (0f, -4f) * Time.deltaTime,Space.World);
-} 
-}
+int direction = 0;
+    void Update ()
+    {
+        direction = 0;
+        if (Input.GetKey (KeyCode.UpArrow) || Input.GetKey (KeyCode.W)) {
+            direction = direction + 1;
+        } 
+        if (Input.GetKey (KeyCode.DownArrow) || Input.GetKey (KeyCode.S) ) 
+        {
+            direction = direction - 1;
+        }
+        this.transform.Translate(new Vector2 (0f, 4f) * Time.deltaTime * direction,Space.World);
+    }
 }

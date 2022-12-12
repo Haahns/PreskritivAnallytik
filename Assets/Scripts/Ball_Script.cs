@@ -45,7 +45,7 @@ public class Ball_Script : MonoBehaviour
 
     }
 
-    void reset()
+    public void Reset()
     {
         sideChoice = sideChoice * -1;
         transform.position = startposition;
@@ -56,7 +56,7 @@ public class Ball_Script : MonoBehaviour
         rb.velocity = Vector2.zero;
     }
 
-        void OnCollisionEnter2D(Collision2D col)
+    void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.name == "Wall right")
         {
@@ -64,7 +64,7 @@ public class Ball_Script : MonoBehaviour
             //Debug.Log(score[0].ToString() + " - " + score[1].ToString());
             //GameManager.GetComponentInChildren(TextMesh)[0].text = score[0].ToString() + " - " + score[1].ToString();
             ScoreDisplay.text = score[0].ToString() + " - " + score[1].ToString();
-            reset();
+            Reset();
         }
         else if (col.gameObject.name == "Wall left")
         {
@@ -73,7 +73,7 @@ public class Ball_Script : MonoBehaviour
             //Camera.main.GetComponentInChildren<TextMeshPro>();
             //GameManager.transform.GetChild(0).GetComponent(TextMesh) = score[0].ToString() + " - " + score[1].ToString();
             ScoreDisplay.text = score[0].ToString() + " - " + score[1].ToString();
-            reset();
+            Reset();
         }
         else Debug.Log(col.gameObject.name);
     }

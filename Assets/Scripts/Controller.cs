@@ -10,22 +10,39 @@ public class Controller : Agent {
     Rigidbody2D rb;
     Vector2 startingPosition;
     GameObject ball;
-
+    float y;
+    float bally;
     int direction = 0;
+    public enum heuristicModes {
+        AI,
+        human
+    }
+    public Dictionary<string, UnityEngine.KeyCode> controls = new Dictionary<string, KeyCode>();
+    public heuristicModes heuristicMode = new heuristicModes();
     void Update ()
     {
+        y = transform.position.y;
+        bally = ball.transform.position.y;
         RequestDecision();
-
-        // TODO: Move player controls to Heuristic
     }
 
     public override void Initialize(){
         startingPosition = transform.position;
+        y = startingPosition.y;
         rb = this.transform.GetComponent<Rigidbody2D>();
         rb.velocity = Vector2.zero;
         // Get stuff
         
         ball = GameObject.Find("Ball");
+        bally = ball.transform.position.y;
+        if (transform.position.x > 0){
+            controls.Add("up", KeyCode.UpArrow);
+            controls.Add("down", KeyCode.DownArrow);
+        }
+        else {
+            controls.Add("up", KeyCode.W);
+            controls.Add("down", KeyCode.S);
+        }
     }
 
     public override void OnEpisodeBegin(){
@@ -35,19 +52,20 @@ public class Controller : Agent {
         ball.GetComponent<Ball_Script>().Reset();
     }
     public override void CollectObservations(VectorSensor sensor){
-        // VectorSensor.AddObservation(IList<float> observation)
-
-        // TODO: Lägg till observationer om padelns och bollens positioner 
+        // observationer av padelns och bollens positioner 
         // (eventuellt också hastighet - beror på hur mycket agenten kan använda tidigare observationer)
         sensor.AddObservation(transform.position.y);
         sensor.AddObservation(ball.transform.position.y);
-        // TODO: Gör obserationen av bollens x-koordinat beroende av vilken sida agenten spelar på
-        if (transform.position.y > 0){
+        // Obserationen av bollens x-koordinat är beroende av vilken sida agenten spelar på
+        if (transform.position.x > 0)
+        {
             sensor.AddObservation(ball.transform.position.x);
-            }
-        else {
+        }
+        else 
+        {
             sensor.AddObservation(ball.transform.position.x * -1);
-            }
+        }
+        // Borde det finnas en observation för motspelaren?
     }
 
     public override void OnActionReceived(ActionBuffers actions){
@@ -60,10 +78,33 @@ public class Controller : Agent {
         {
             direction = direction - 1;
         }
-        transform.Translate(new Vector2 (0f, 4f) * Time.deltaTime * direction,Space.World);
+        transform.Translate(new Vector2 (0f, 6f) * Time.deltaTime * direction,Space.World);
 
         // TODO: Belöningar
+        // Liten belöning för att träffa bollen - I OnCollisionEnter2D nedanför
+        // Stor belöning för att få ett poäng och / eller vinna spelet
 
+    }
+
+    void OnCollisionEnter2D(Collision2D col){
+        if (col.gameObject.name == "Ball"){
+            AddReward(0.01f);
+        }
+    }
+
+    public void Score(){
+        AddReward(0.09f);
+    }
+
+    public void Win(){
+        AddReward(1f);
+        EndEpisode();
+        Debug.Log(transform.name + " " + GetCumulativeReward());
+    }
+
+    public void End(){
+        EndEpisode();
+        Debug.Log(transform.name + " " + GetCumulativeReward());
     }
 
     public override void Heuristic(in ActionBuffers actionsOut){
@@ -71,12 +112,27 @@ public class Controller : Agent {
         // TODO: Manuell kontroll
         var discreteActionsOut = actionsOut.DiscreteActions;
         direction = 1;
-        if (Input.GetKey (KeyCode.UpArrow) || Input.GetKey (KeyCode.W)) {
-            direction = direction + 1;
-        } 
-        if (Input.GetKey (KeyCode.DownArrow) || Input.GetKey (KeyCode.S) ) 
+        if ((int) heuristicMode  == 1) // Human player
+        {              
+            if (Input.GetKey (controls["up"]))
+            {
+                direction = direction + 1;
+            } 
+            if (Input.GetKey (controls["down"])) 
+            {
+                direction = direction - 1;
+            }
+        }
+        else if ((int) heuristicMode  == 0) // Simple AI player
         {
-            direction = direction - 1;
+            if (bally > y)
+            {
+                direction = direction + 1;
+            } 
+            if (bally < y) 
+            {
+                direction = direction - 1;
+            }
         }
         discreteActionsOut[0] = direction;
     }

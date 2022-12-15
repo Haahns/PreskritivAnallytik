@@ -88,7 +88,10 @@ public class Controller : Agent {
 
     void OnCollisionEnter2D(Collision2D col){
         if (col.gameObject.name == "Ball"){
-            AddReward(0.01f);
+            var rb = col.transform.GetComponent<Rigidbody2D>();
+            //if (Vector2.Angle(rb.velocity, Vector2.up) > 40 && Vector2.Angle(rb.velocity, Vector2.up) < 140){
+                AddReward(0.005f);
+            //}
         }
     }
 
@@ -102,7 +105,8 @@ public class Controller : Agent {
         Debug.Log(transform.name + " " + GetCumulativeReward());
     }
 
-    public void End(){
+    public void End(float reward = 0){
+        AddReward(reward);
         EndEpisode();
         Debug.Log(transform.name + " " + GetCumulativeReward());
     }

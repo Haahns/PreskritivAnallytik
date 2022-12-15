@@ -192,9 +192,9 @@ GameObject:
   m_Component:
   - component: {fileID: 407623393}
   - component: {fileID: 407623396}
+  - component: {fileID: 407623395}
   - component: {fileID: 407623392}
   - component: {fileID: 407623394}
-  - component: {fileID: 407623395}
   m_Layer: 0
   m_Name: PaddleLeft
   m_TagString: Untagged
